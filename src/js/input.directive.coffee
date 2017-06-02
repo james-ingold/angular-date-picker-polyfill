@@ -140,7 +140,8 @@ unless Modernizr.inputtypes.date
         restrict: 'E',
         require: '?ngModel',
         scope: {
-          ngModel: '='
+          ngModel: '=',
+          changeFunc: '=?'
         },
         compile: (elem, attrs) ->
           return unless attrs.ngModel? && (attrs.type == 'date' || attrs.type == 'datetime-local')

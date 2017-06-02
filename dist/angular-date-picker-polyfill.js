@@ -247,7 +247,8 @@
         restrict: 'E',
         require: '?ngModel',
         scope: {
-          ngModel: '='
+          ngModel: '=',
+          changeFunc: '=?'
         },
         compile: function(elem, attrs) {
           if (!((attrs.ngModel != null) && (attrs.type === 'date' || attrs.type === 'datetime-local'))) {
