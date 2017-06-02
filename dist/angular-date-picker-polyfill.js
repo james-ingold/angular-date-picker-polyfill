@@ -9,7 +9,6 @@
       restrict: 'A',
       replace: true,
       require: 'ngModel',
-      scope: {},
       link: function(scope, elem, attrs, ngModelCtrl) {
         var pullMonthDateFromModel, refreshView;
         scope.dayAbbreviations = ['Su', 'M', 'T', 'W', 'R', 'F', 'S'];
@@ -41,6 +40,9 @@
           c.setMonth(d.getMonth());
           c.setDate(d.getDate());
           ngModelCtrl.$setViewValue(c);
+          if (angular.isDefined(scope.changeFunc)) {
+            scope.changeFunc(c);
+          }
           if (!aaDateUtil.dateObjectsAreEqualToMonth(d, scope.monthDate)) {
             pullMonthDateFromModel();
           }
@@ -217,7 +219,8 @@
       restrict: 'A',
       require: 'ngModel',
       scope: {
-        ngModel: '='
+        ngModel: '=',
+        changeFunc: '=?'
       },
       link: function(scope, elem, attrs, ngModelCtrl) {
         return linker(scope, elem, attrs, ngModelCtrl, $compile, aaDateUtil, false);
@@ -264,10 +267,10 @@
   angular.module('angular-date-picker-polyfill').factory('aaMonthUtil', ["aaDateUtil", function(aaDateUtil) {
     return {
       numberOfDaysInMonth: function(year, month) {
-        return [31, ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0 ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
+        return [31, (((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0) ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
       },
       generateMonthArray: function(year, month, selected) {
-        var arr, d, dayIndex, endDate, obj, offset, today, weekNum, _i;
+        var arr, d, dayIndex, endDate, i, obj, offset, today, weekNum;
         if (selected == null) {
           selected = null;
         }
@@ -280,11 +283,11 @@
         weekNum = 0;
         while (d <= endDate) {
           arr.push([]);
-          for (dayIndex = _i = 0; _i <= 6; dayIndex = ++_i) {
+          for (dayIndex = i = 0; i <= 6; dayIndex = ++i) {
             obj = {
               date: angular.copy(d),
               isToday: aaDateUtil.dateObjectsAreEqualToDay(d, today),
-              isSelected: selected && aaDateUtil.dateObjectsAreEqualToDay(d, selected) ? true : false,
+              isSelected: (selected && aaDateUtil.dateObjectsAreEqualToDay(d, selected)) ? true : false,
               isOtherMonth: d.getMonth() !== month
             };
             arr[weekNum].push(obj);
@@ -363,17 +366,17 @@
           return resetToNull();
         };
         setupSelectOptions = function() {
-          var _i, _j, _results, _results1;
+          var i, j, results, results1;
           scope.useAmPm = attrs.useAmPm != null ? attrs.useAmPm === true || attrs.useAmPm === 'true' : true;
           scope.hourOptions = scope.useAmPm ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] : (function() {
-            _results = [];
-            for (_i = 0; _i <= 23; _i++){ _results.push(_i); }
-            return _results;
+            results = [];
+            for (i = 0; i <= 23; i++){ results.push(i); }
+            return results;
           }).apply(this);
           scope.minuteOptions = (function() {
-            _results1 = [];
-            for (_j = 0; _j <= 59; _j++){ _results1.push(_j); }
-            return _results1;
+            results1 = [];
+            for (j = 0; j <= 59; j++){ results1.push(j); }
+            return results1;
           }).apply(this);
           return scope.amPmOptions = ['AM', 'PM'];
         };
@@ -386,10 +389,10 @@
           return pullTimeFromModel();
         };
         pullTimeFromModel = function() {
-          var d, _ref;
+          var d, ref;
           if (angular.isDate(ngModelCtrl.$viewValue)) {
             d = angular.copy(ngModelCtrl.$viewValue);
-            return _ref = aaTimeUtil.getMinuteAndHourFromDate(d, scope.useAmPm), scope.hour = _ref[0], scope.minute = _ref[1], scope.amPm = _ref[2], _ref;
+            return ref = aaTimeUtil.getMinuteAndHourFromDate(d, scope.useAmPm), scope.hour = ref[0], scope.minute = ref[1], scope.amPm = ref[2], ref;
           } else {
             return resetToNull();
           }

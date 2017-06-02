@@ -112,7 +112,8 @@ angular.module('angular-date-picker-polyfill')
       restrict: 'A',
       require: 'ngModel',
       scope: {
-        ngModel: '='
+        ngModel: '=',
+        changeFunc: '=?'
       },
       link: (scope, elem, attrs, ngModelCtrl) ->
         linker(scope, elem, attrs, ngModelCtrl, $compile, aaDateUtil, false)
